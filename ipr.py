@@ -62,6 +62,7 @@ class ProductionPerformance:
         based on q_max estimation and n intervals
 
         INPUT:
+            q_max: numeric
             n: int
 
         OUTPUT: { "q": numeric, "p": numeric }[]
