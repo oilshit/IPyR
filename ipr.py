@@ -3,6 +3,8 @@ from utils.data_types import *
 
 from utils.equations import *
 
+STANDARD_PRESSURE = 14.7                              # in psia
+
 class ProductionPerformance:
     """
     Calculation of production performance of multi-phase of IPR
@@ -56,6 +58,24 @@ class ProductionPerformance:
         except TypeError:
             print("Expected str value, %s given" % (type(method)))
 
+    def calculate_pwf(self, q: NUMERIC, q_max: NUMERIC):
+        """
+        Calculation of wellbore pressure (p_wf)
+        Using Vogel equations only
+
+        INPUT:
+            q (flow rate): numeric
+            q_max (max flow rate): numeric
+
+        INPUT:
+            p_wf = numeric
+        """
+
+        pressure_ratio = PressureRatioFromVogelEquation(q, q_max)
+        p_wf = pressure_ratio * self.p_res
+
+        return p_wf
+
     def get_production_graph(self, q_max: NUMERIC, n: INT):
         """
         Create plot of production data interval
@@ -68,26 +88,26 @@ class ProductionPerformance:
         OUTPUT: { "q": numeric, "p": numeric }[]
         """
         
-        pressure_list = [self.p_res, self.data]
+        pressure_list = [x["p"] for x in self.data] + [self.p_res]
         production_list = []
 
         if (n > 0):
             # Add data for each interval
-            interval = max(self.p_res) // n
+            interval = self.p_res // n
 
             # Add pressure segments
-            pressure_segment = 0
+            pressure_segment = STANDARD_PRESSURE
             while (pressure_segment < self.p_res):
                 pressure_list.append(pressure_segment)
-                pressure_segment + interval
+                pressure_segment += interval
 
-            pressure_list = pressure_list.sort()
+            pressure_list.sort()
 
             # Add pressure list
             for p in pressure_list:
                 production_list.append({ 
+                    "p": p,
                     "q": round(q_max * VogelEquation(p, self.p_res), 2),
-                    "p": p
                 });
     
             return production_list
