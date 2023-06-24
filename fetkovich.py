@@ -32,12 +32,12 @@ print(repr(production_data))
 
 separate_line()
 
-# Using Vogel Equation for calculating
+# Using Fetkovich Equation for calculating
 ## max flow rate using single data
 for data in production_data.data:
     print("q: %d, p: %d" % (data["q"], data["p"]))
 
-    print("Max flow rate using Vogel equation: " + str(
+    print("Max flow rate using Fetkovich equation: " + str(
         round(production_data.calculate_q_max(
             "fetkovich",
             data
