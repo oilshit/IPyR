@@ -3,6 +3,8 @@ from utils.data_types import *
 
 from utils.equations import *
 
+from utils.numericals import *
+
 STANDARD_PRESSURE = 14.7                              # in psia
 
 class ProductionPerformance:
@@ -45,7 +47,29 @@ class ProductionPerformance:
                 raise TypeError
 
             elif (method == "vogel"):
-                q_max = data["q"] / VogelEquation(data["p"], self.p_res)
+                # applied all parameters in Vogel equation
+                q_max = data["q"] / VogelEquation(
+                    data["p"], self.p_res
+                )
+
+                return q_max
+            
+            elif (method == "fetkovich"):
+                # Resolving n using power regression method
+                production_x = [x["q"] for x in self.data]
+                production_y = [
+                    (self.p_res**2 - x["p"]**2) for x in self.data
+                ]
+
+                (C, n) = PowerRegression(production_x, production_y)
+
+                # applied all parameters in Fetkovich Equation
+                q_max = data["q"] / FetkovichEquation(
+                    p=data["p"],
+                    p_res=self.p_res,
+                    C=None,
+                    n=n
+                )
 
                 return q_max
 
@@ -115,7 +139,7 @@ class ProductionPerformance:
     def __repr__(self):
         data = "".join(["    " + STRING(x) + ",\n" for x in self.data])
 
-        class_repr = STRING("Production performance data with reservoir pressure psia = "
+        class_repr = STRING("Production performance data with reservoir pressure (psia) = "
                             + STRING(self.p_res)
                             + "\nand "
                             + (

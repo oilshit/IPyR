@@ -42,3 +42,26 @@ def PressureRatioFromVogelEquation(q: NUMERIC, q_max: NUMERIC):
     result = (-a - (b**2 - (4 * a * (c - qr)))**0.5) / (2 * a)
 
     return result
+
+def FetkovichEquation(
+        p: NUMERIC, p_res: NUMERIC, C: OPTIONAL_NUMERIC, n: NUMERIC
+    ) -> NUMERIC:
+    """
+    Calculation of flow rate (q) using Fetkovich equation
+    along with Rawlin and Schellhardt method
+
+    INPUT
+        p (wellbore pressure): numeric
+        p_res (reservoir_pressure): numeric
+        C (C coefficient): numeric
+        n (n coefficient): numeric
+
+    OUTPUT
+        q: numeric
+    """
+
+    psr = (p / p_res) ** 2
+
+    result = (1 - psr) ** n
+    return result
+

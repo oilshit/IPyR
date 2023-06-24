@@ -18,9 +18,9 @@ for data in production_data:
     production1.data.append(data)
 
 # Get production graph interval
-## Based on max flow obtained from Vogel eq.
-test_production_data_2 = production1.data[0]
-q_max_2 = production1.calculate_q_max("vogel", test_production_data_2)
+## Based on max flow obtained from Fetkovich eq.
+test_production_data_0 = production1.data[0]
+q_max_2 = production1.calculate_q_max("fetkovich", test_production_data_0)
 iteration_2 = 12
 
 production_graph = production1.get_production_graph(
@@ -36,8 +36,8 @@ plt.scatter(flowrate_x_2, pressure_y_2, label=("p_wf = " + str(production1.data[
 
 # =========================
 
-test_production_data_3 = production1.data[1]
-q_max_3 = production1.calculate_q_max("vogel", test_production_data_3)
+test_production_data_1 = production1.data[1]
+q_max_3 = production1.calculate_q_max("fetkovich", test_production_data_1)
 iteration_3 = 12
 
 production_graph = production1.get_production_graph(
@@ -53,8 +53,8 @@ plt.scatter(flowrate_x_3, pressure_y_3, label=("p_wf = " + str(production1.data[
 
 # =========================
 
-test_production_data_1 = production1.data[2]
-q_max_1 = production1.calculate_q_max("vogel", test_production_data_1)
+test_production_data_2 = production1.data[2]
+q_max_1 = production1.calculate_q_max("fetkovich", test_production_data_2)
 iteration_1 = 12
 
 production_graph = production1.get_production_graph(
@@ -73,7 +73,7 @@ plt.scatter(flowrate_x, pressure_y, label=("p_wf = " + str(production1.data[2]["
 plt.xlim(0, q_max_3 + 1000)
 plt.ylim(0, reservoir_pressure + 1000)
 
-plt.title("Several IPRs for several wellbore pressures\nUsing Vogel equation")
+plt.title("Several IPRs for several wellbore pressures\nUsing Fetkovich equation")
 plt.xlabel('Flow rate (stbd)')
 plt.ylabel('Pressure (psia)')
 
