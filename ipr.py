@@ -208,7 +208,7 @@ class ThreePhaseProduction(Production):
         except PhaseNotExistsException:
             print(
                 "Phase selected doesn't exist.\n" + 
-                "Available phase: 'oil', 'water', and 'gas'"
+                "Available phase: 'oil' and 'water'"
             )
             return None
 
