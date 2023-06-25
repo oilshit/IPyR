@@ -26,6 +26,25 @@ class ProductionPerformance:
         self.p_res = p_res
         self.data = []
 
+            
+    def __repr__(self):
+        data = "".join(["    " + STRING(x) + ",\n" for x in self.data])
+
+        class_repr = STRING("Production performance data with reservoir pressure (psia) = "
+                            + STRING(self.p_res)
+                            + "\nand "
+                            + (
+                                "some production data: [\n" + data + "]."
+                                if len(self.data) > 0
+                                else "empty production data."
+                            )
+                            )
+
+        print(class_repr)
+
+        return repr("Production instance exists!")
+    
+class TwoPhaseProduction(ProductionPerformance):
     def calculate_q_max(
         self,
         method: STRING,
@@ -135,20 +154,6 @@ class ProductionPerformance:
                 });
     
             return production_list
-            
-    def __repr__(self):
-        data = "".join(["    " + STRING(x) + ",\n" for x in self.data])
 
-        class_repr = STRING("Production performance data with reservoir pressure (psia) = "
-                            + STRING(self.p_res)
-                            + "\nand "
-                            + (
-                                "some production data: [\n" + data + "]."
-                                if len(self.data) > 0
-                                else "empty production data."
-                            )
-                            )
-
-        print(class_repr)
-
-        return repr("Production instance exists!")
+# class ThreePhaseProduction(ProductionPerformance):
+    

@@ -1,11 +1,11 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from ipr import ProductionPerformance
+from ipr import TwoPhaseProduction
 
 # Let's test on creating our first performance
 reservoir_pressure = 1734
-production1 = ProductionPerformance(reservoir_pressure)
+production1 = TwoPhaseProduction(reservoir_pressure)
 
 # Add several data on the production instance
 production_data = [

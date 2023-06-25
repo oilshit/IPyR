@@ -1,11 +1,11 @@
-from ipr import ProductionPerformance
+from ipr import TwoPhaseProduction
 
 def separate_line():
     print()
 
 # Initial reservoir pressure
 reservoir_pressure = 1734
-production_data = ProductionPerformance(reservoir_pressure)
+production_data = TwoPhaseProduction(reservoir_pressure)
 
 # Initial testing in repr production instance
 print(repr(production_data))
