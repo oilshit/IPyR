@@ -32,4 +32,4 @@ Since this repository was created, **Python 3.8.10** is used in this project.
 ### Three-phase production
 #### Wiggin
 - `wiggin.py`: Demonstrating graph correlation of wellbore pressures between flow rates based on **Wiggin Equation**
-- `graph-wiggin-1`: Testing for calculation of `q_max` of oil and water (in this case, using `p_wf` = 1335 psia) using **Wiggin Equation**
+- `graph-wiggin-1.py`: Testing for calculation of `q_max` of oil and water (in this case, using `p_wf` = 1335 psia) using **Wiggin Equation**
