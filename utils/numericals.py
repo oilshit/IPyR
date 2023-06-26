@@ -38,3 +38,29 @@ def PowerRegression(data_x, data_y):
     b0 = math.exp(b0)
 
     return (b0, 1 / b1)
+
+def LinearRegression(data_x, data_y):
+    """
+    y = a + b + x
+    """
+
+    n = len(data_x)
+
+    xy = [data_x[i] * data_y[i] for i in range(n)]
+    x_squared = [i**2 for i in data_x]
+    y_squared = [i**2 for i in data_y]
+
+    sums = {
+        "x": sum(data_x),
+        "y": sum(data_y),
+        "xy": sum(xy),
+        "x_squared": sum(x_squared),
+        "y_squared": sum(y_squared),
+    }
+
+    b1 = ((n * sums["xy"]) - (sums["x"] * sums["y"])) / \
+        ((n * sums["x_squared"] - sums["x"]**2))
+    
+    b0 = (sums["y"] - b1 * sums["x"]) / n
+
+    return (b0, 1 / b1)
