@@ -24,6 +24,7 @@ q_max_0 = production1.calculate_q_max("fetkovich", test_production_data_0)
 iteration_0 = 12
 
 production_graph = production1.get_production_graph(
+    "fetkovich",
     q_max_0,
     iteration_0
 )
@@ -41,6 +42,7 @@ q_max_1 = production1.calculate_q_max("fetkovich", test_production_data_1)
 iteration_1 = 12
 
 production_graph = production1.get_production_graph(
+    "fetkovich",
     q_max_1,
     iteration_1
 )
@@ -58,6 +60,7 @@ q_max_2 = production1.calculate_q_max("fetkovich", test_production_data_2)
 iteration_2 = 12
 
 production_graph = production1.get_production_graph(
+    "fetkovich",
     q_max_2,
     iteration_2
 )
