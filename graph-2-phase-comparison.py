@@ -24,7 +24,7 @@ q_max_vogel = production_data.calculate_q_max("vogel", test_production_data)
 iteration_0 = 12
 
 vogel_graph = production_data.get_production_graph(
-    "fetkovich",
+    "vogel",
     q_max_vogel,
     iteration_0
 )
