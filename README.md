@@ -27,9 +27,9 @@ Since this repository was created, **Python 3.8.10** is used in this project.
 - `graph-2.py`: Demonstrating graph correlation of wellbore pressures between flow rates based on  **Fetkovich Equation**
 
 #### Production graph comparison
-- `graph-2-phase-comparison.py`: Compare of production graph between `Vogel` and `Fetkovich` methods.
+- `graph-2-phase-comparison.py`: Compare of production graph between **Vogel** and **Fetkovich** methods.
 
 ### Three-phase production
 #### Wiggin
-- `phase3.py`: Demonstrating graph correlation of wellbore pressures between flow rates based on **Vogel Equation**
+- `phase3.py`: Demonstrating graph correlation of wellbore pressures between flow rates based on **Wiggin Equation**
 - `graph-3`: Testing for calculation of `q_max` of oil and water (in this case, using `p_wf` = 1335 psia) using **Wiggin Equation**
