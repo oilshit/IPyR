@@ -1,12 +1,4 @@
-from utils.data_types import NUMERIC
-from utils.equations import NUMERIC
-from utils.errors import *
-from utils.data_types import *
-
-from utils.equations import *
-
-from utils.numericals import *
-from utils.numericals import NUMERIC
+from .utils import *
 
 STANDARD_PRESSURE = 14.7                              # in psia
 STANDARD_TEMPERATURE = 60                             # in Fahrenheit
@@ -15,8 +7,9 @@ class Production:
     """
     Calculation of production performance of multi-phase of IPR
     """
+    
 
-    def __init__(self, p_res: NUMERIC):
+    def __init__(self, p_res: dt.NUMERIC):
         """
         Calculation of production performance of multi-phase of IPR
 
@@ -31,10 +24,10 @@ class Production:
         self.data = []
 
     def __repr__(self):
-        data = "".join(["    " + STRING(x) + ",\n" for x in self.data])
+        data = "".join(["    " + dt.STRING(x) + ",\n" for x in self.data])
 
-        class_repr = STRING("Production performance data with reservoir pressure (psia) = "
-                            + STRING(self.p_res)
+        class_repr = dt.STRING("Production performance data with reservoir pressure (psia) = "
+                            + dt.STRING(self.p_res)
                             + "\nand "
                             + (
                                 "some production data: [\n" + data + "]."
@@ -49,14 +42,14 @@ class Production:
 
 
 class TwoPhaseProduction(Production):
-    def __init__(self, p_res: NUMERIC):
+    def __init__(self, p_res: dt.NUMERIC):
         super().__init__(p_res)
 
     def calculate_q_max(
         self,
-        method: STRING,
-        data: FLOWRATE_PRESSURE_SINGLE_DATA
-    ) -> NUMERIC:
+        method: dt.STRING,
+        data: dt.FLOWRATE_PRESSURE_SINGLE_DATA
+    ) -> dt.NUMERIC:
         """
         Calculation of max flow rate (q_max)
 
@@ -69,12 +62,12 @@ class TwoPhaseProduction(Production):
         """
 
         try:
-            if (not isinstance(method, STRING)):
+            if (not isinstance(method, dt.STRING)):
                 raise TypeError
 
             if (method == "vogel"):
                 # applied all parameters in Vogel equation
-                q_max = data["q"] / VogelEquation(
+                q_max = data["q"] / eq.vogel_equation(
                     data["p"], self.p_res
                 )
 
@@ -87,10 +80,10 @@ class TwoPhaseProduction(Production):
                     (self.p_res**2 - x["p"]**2) for x in self.data
                 ]
 
-                (C, n) = PowerRegression(production_x, production_y)
+                (C, n) = numerical.power_regression(production_x, production_y)
 
                 # applied all parameters in Fetkovich Equation
-                q_max = data["q"] / FetkovichEquation(
+                q_max = data["q"] / eq.fetkovich_equation(
                     p=data["p"],
                     p_res=self.p_res,
                     C=None,
@@ -100,9 +93,9 @@ class TwoPhaseProduction(Production):
                 return q_max
 
             else:
-                raise MethodNotExistExecption
+                raise err.MethodNotExistExecption
 
-        except MethodNotExistExecption:
+        except err.MethodNotExistExecption:
             print("Method of calculation does not exist.")
             return None
 
@@ -110,7 +103,7 @@ class TwoPhaseProduction(Production):
             print("Expected str value  for method, %s given" % (type(method)))
             return None
 
-    def calculate_pwf(self, method: STRING, q: NUMERIC, q_max: NUMERIC) -> NUMERIC:
+    def calculate_pwf(self, method: dt.STRING, q: dt.NUMERIC, q_max: dt.NUMERIC) -> dt.NUMERIC:
         """
         Calculation of wellbore pressure (p_wf)
 
@@ -123,7 +116,7 @@ class TwoPhaseProduction(Production):
         """
 
         if (method == "vogel"):
-            pressure_ratio = PressureRatioFromVogelEquation(q, q_max)
+            pressure_ratio = eq.pressure_ratio_from_vogel_equation(q, q_max)
         elif (method == "fetkovich"):
             # Resolving n using power regression method
             production_x = [x["q"] for x in self.data]
@@ -131,15 +124,15 @@ class TwoPhaseProduction(Production):
                 (self.p_res**2 - x["p"]**2) for x in self.data
             ]
 
-            (C, n) = PowerRegression(production_x, production_y)
+            (C, n) = numerical.power_regression(production_x, production_y)
 
-            pressure_ratio = PressureRatioFromFetkovichEquation(q, q_max, n)
+            pressure_ratio = eq.pressure_ratio_from_fetkovich_equation(q, q_max, n)
 
         p_wf = pressure_ratio * self.p_res
 
         return p_wf
 
-    def get_production_graph(self, method: STRING, q_max: NUMERIC, n: INT):
+    def get_production_graph(self, method: dt.STRING, q_max: dt.NUMERIC, n: dt.INT):
         """
         Create plot of production data interval
         based on q_max estimation and n intervals
@@ -171,7 +164,7 @@ class TwoPhaseProduction(Production):
                 if (method == "vogel"):
                     production_list.append({
                         "p": p,
-                        "q": round(q_max * VogelEquation(p, self.p_res), 2),
+                        "q": round(q_max * eq.vogel_equation(p, self.p_res), 2),
                     })
                 elif (method == "fetkovich"):
                     production_x = [x["q"] for x in self.data]
@@ -179,11 +172,11 @@ class TwoPhaseProduction(Production):
                         (self.p_res**2 - x["p"]**2) for x in self.data
                     ]
 
-                    (C, n) = PowerRegression(production_x, production_y)
+                    (C, n) = numerical.power_regression(production_x, production_y)
 
                     production_list.append({
                         "p": p,
-                        "q": round(q_max * FetkovichEquation(p, self.p_res, None, n), 2),
+                        "q": round(q_max * eq.fetkovich_equation(p, self.p_res, None, n), 2),
                     })
 
             return production_list
@@ -194,12 +187,12 @@ class ThreePhaseProduction(Production):
     Three-phase of reservoir production performance
     """
 
-    def __init__(self, p_res: NUMERIC, water_cut: NUMERIC):
+    def __init__(self, p_res: dt.NUMERIC, water_cut: dt.NUMERIC):
         super().__init__(p_res)
 
         self.water_cut = water_cut
 
-    def calculate_q_max(self, phase: STRING, method: STRING, data: FLOWRATE_PRESSURE_SINGLE_DATA) -> NUMERIC:
+    def calculate_q_max(self, phase: dt.STRING, method: dt.STRING, data: dt.FLOWRATE_PRESSURE_SINGLE_DATA) -> dt.NUMERIC:
         """
         Calculate max flow rate (q_max)
         According to phase and method selection
@@ -214,14 +207,14 @@ class ThreePhaseProduction(Production):
         """
 
         try:
-            if (phase not in PHASE_DATA):
-                raise PhaseNotExistsException
+            if (phase not in dt.PHASE_DATA):
+                raise err.PhaseNotExistsException
 
-            if (not isinstance(method, STRING)):
+            if (not isinstance(method, dt.STRING)):
                 raise TypeError
 
             if (method == "wiggin"):
-                q_ratio = WigginEquation(phase, data["p"], self.p_res)
+                q_ratio = eq.wiggin_equation(phase, data["p"], self.p_res)
 
                 if (phase == "oil"):
                     q = data["q"]
@@ -232,7 +225,7 @@ class ThreePhaseProduction(Production):
 
                 return q_max
 
-        except PhaseNotExistsException:
+        except err.PhaseNotExistsException:
             print(
                 "Phase selected doesn't exist.\n" +
                 "Available phase: 'oil' and 'water'"
@@ -243,7 +236,7 @@ class ThreePhaseProduction(Production):
             print("Expected str value  for method, %s given" % (type(method)))
             return None
 
-    def calculate_pwf(self, phase: STRING, q: NUMERIC, q_max: NUMERIC):
+    def calculate_pwf(self, phase: dt.STRING, q: dt.NUMERIC, q_max: dt.NUMERIC):
         """
         Calculation of wellbore pressure (p_wf)
         Using Vogel equations only
@@ -256,12 +249,12 @@ class ThreePhaseProduction(Production):
             p_wf = numeric
         """
 
-        pressure_ratio = PressureRatioFromWigginEquation(phase, q, q_max)
+        pressure_ratio = eq.pressure_ratio_from_wiggin_equation(phase, q, q_max)
         p_wf = pressure_ratio * self.p_res
 
         return p_wf
 
-    def get_production_graph(self, phase: STRING, q_max: NUMERIC, n: INT):
+    def get_production_graph(self, phase: dt.STRING, q_max: dt.NUMERIC, n: dt.INT):
         """
         Create plot of production data interval
         based on q_max estimation and n intervals
@@ -293,7 +286,7 @@ class ThreePhaseProduction(Production):
             for p in pressure_list:
                 production_list.append({
                     "p": p,
-                    "q": round(q_max * WigginEquation(phase, p, self.p_res), 2),
+                    "q": round(q_max * eq.wiggin_equation(phase, p, self.p_res), 2),
                 })
 
             return production_list

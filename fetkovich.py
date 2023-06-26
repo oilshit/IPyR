@@ -1,4 +1,4 @@
-from ipr import TwoPhaseProduction
+from src.ipr import TwoPhaseProduction
 
 def separate_line():
     print()

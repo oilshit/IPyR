@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-from ipr import ThreePhaseProduction
+from src.ipr import ThreePhaseProduction
 
 # Let's test on creating our first performance
 reservoir_pressure = 1734

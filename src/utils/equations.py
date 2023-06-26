@@ -1,18 +1,17 @@
-from .data_types import *
+from . import data_types as dt
 
 from math import pow, sqrt
 
-
-def VogelEquation(p: NUMERIC, p_res: NUMERIC) -> NUMERIC:
+def vogel_equation(p: dt.NUMERIC, p_res: dt.NUMERIC) -> dt.NUMERIC:
     """
     Calculation of flow rate ratio
     Using Vogel Equation
 
     INPUT:
-        p (pressure): numeric
-        p_res (reservoir presure): numeric
+        p (pressure): dt.NUMERIC
+        p_res (reservoir presure): dt.NUMERIC
 
-    OUTPUT: numeric
+    OUTPUT: dt.NUMERIC
     """
     pr = p / p_res          # pressure ratio
 
@@ -22,17 +21,17 @@ def VogelEquation(p: NUMERIC, p_res: NUMERIC) -> NUMERIC:
     return result if result > 0 else 0.0001
 
 
-def PressureRatioFromVogelEquation(q: NUMERIC, q_max: NUMERIC):
+def pressure_ratio_from_vogel_equation(q: dt.NUMERIC, q_max: dt.NUMERIC):
     """
     Calculation of pressure ratio
     Based on re-arrange of Vogel equation
 
     INPUT:
-        p_res (reservoir pressure): numeric
-        q (flow rate): numeric
-        q_max (max flow rate): numeric
+        p_res (reservoir pressure): dt.NUMERIC
+        q (flow rate): dt.NUMERIC
+        q_max (max flow rate): dt.NUMERIC
 
-    OUTPUT: numeric
+    OUTPUT: dt.NUMERIC
     """
     # Quadratic equation constants
     a = -0.8
@@ -48,21 +47,21 @@ def PressureRatioFromVogelEquation(q: NUMERIC, q_max: NUMERIC):
     return result
 
 
-def FetkovichEquation(
-    p: NUMERIC, p_res: NUMERIC, C: OPTIONAL_NUMERIC, n: NUMERIC
-) -> NUMERIC:
+def fetkovich_equation(
+    p: dt.NUMERIC, p_res: dt.NUMERIC, C: dt.OPTIONAL_NUMERIC, n: dt.NUMERIC
+) -> dt.NUMERIC:
     """
     Calculation of flow rate (q) using Fetkovich equation
     along with Rawlin and Schellhardt method
 
     INPUT
-        p (wellbore pressure): numeric
-        p_res (reservoir_pressure): numeric
-        C (C coefficient): numeric
-        n (n coefficient): numeric
+        p (wellbore pressure): dt.NUMERIC
+        p_res (reservoir_pressure): dt.NUMERIC
+        C (C coefficient): dt.NUMERIC
+        n (n coefficient): dt.NUMERIC
 
     OUTPUT
-        q: numeric
+        q: dt.NUMERIC
     """
 
     psr = pow(p / p_res, 2)
@@ -71,19 +70,19 @@ def FetkovichEquation(
     return result
 
 
-def PressureRatioFromFetkovichEquation(
-    q: NUMERIC, q_max: NUMERIC, n: NUMERIC
-) -> NUMERIC:
+def pressure_ratio_from_fetkovich_equation(
+    q: dt.NUMERIC, q_max: dt.NUMERIC, n: dt.NUMERIC
+) -> dt.NUMERIC:
     """
     Calculation of pressure ratio
     Based on re-arrange of Vogel equation
 
     INPUT:
-        p_res (reservoir pressure): numeric
-        q (flow rate): numeric
-        q_max (max flow rate): numeric
+        p_res (reservoir pressure): dt.NUMERIC
+        q (flow rate): dt.NUMERIC
+        q_max (max flow rate): dt.NUMERIC
 
-    OUTPUT: numeric
+    OUTPUT: dt.NUMERIC
     """
     qr = q / q_max
 
@@ -92,20 +91,20 @@ def PressureRatioFromFetkovichEquation(
     return pr
 
 
-def WigginEquation(
-        phase: STRING, p: NUMERIC, p_res: NUMERIC
-) -> NUMERIC:
+def wiggin_equation(
+        phase: dt.STRING, p: dt.NUMERIC, p_res: dt.NUMERIC
+) -> dt.NUMERIC:
     """
     Calculation of flow rate ratio
     using Wiggin equation according to phase selection
 
     INPUT
         phase: str
-        p (wellbore pressure): numeric
-        p_res (reservoir pressure): numeric
+        p (wellbore pressure): dt.NUMERIC
+        p_res (reservoir pressure): dt.NUMERIC
 
     OUTPUT
-        qr: numeric
+        qr: dt.NUMERIC
     """
 
     # Initiate pressure ratio
@@ -120,17 +119,17 @@ def WigginEquation(
     return qr
 
 
-def PressureRatioFromWigginEquation(phase: STRING, q: NUMERIC, q_max: NUMERIC):
+def pressure_ratio_from_wiggin_equation(phase: dt.STRING, q: dt.NUMERIC, q_max: dt.NUMERIC):
     """
     Calculation of pressure ratio (wellbore pressure)
     Based on re-arrange of Wiggin equation
 
     INPUT:
-        p_res (reservoir pressure): numeric
-        q (flow rate): numeric
-        q_max (max flow rate): numeric
+        p_res (reservoir pressure): dt.NUMERIC
+        q (flow rate): dt.NUMERIC
+        q_max (max flow rate): dt.NUMERIC
 
-    OUTPUT: numeric
+    OUTPUT: dt.NUMERIC
     """
     # Quadratic equation constants
     a = -0.48 if phase == "oil" else -0.28

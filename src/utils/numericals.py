@@ -1,8 +1,6 @@
 import math
 
-from .equations import *
-
-def PowerRegression(data_x, data_y):
+def power_regression(data_x, data_y):
     """
     y = a * x^b
     
@@ -39,7 +37,7 @@ def PowerRegression(data_x, data_y):
 
     return (b0, 1 / b1)
 
-def LinearRegression(data_x, data_y):
+def linear_regression(data_x, data_y):
     """
     y = a + b + x
     """

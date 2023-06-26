@@ -1,4 +1,4 @@
-from ipr import ThreePhaseProduction
+from src.ipr import ThreePhaseProduction
 
 def separate_line():
     print()
@@ -53,7 +53,8 @@ for data in production_data.data:
             production_data.calculate_q_max(
                 "water",
                 "wiggin",
-                data
+                
+                
             )
         )
     ))
