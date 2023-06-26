@@ -13,7 +13,7 @@ Since this repository was created, **Python 3.8.10** is used in this project.
     - Flow rate at current wellbore pressure (`q: NUMERIC (float | int)`)<sup>[1]</sup>
 - Illustrate extensions of production data for graphic and charting purposes
     
-<sup>[1]</sup> Notice that `p` and `q` are combined in single dictionary defined as `Dict[NUMERIC (float | int), NUMERIC (float | int)]`. For instance, for single data of `q` and `p`, it will be defined as `data = { "p": NUMERIC, "q": NUMERIC }`.
+> <sup>[1]</sup> Notice that `p` and `q` are combined in single dictionary defined as `Dict[NUMERIC (float | int), NUMERIC (float | int)]`. For instance, for single data of `q` and `p`, it will be defined as `data = { "p": NUMERIC, "q": NUMERIC }`.
 
 ## Testing Files
 ### Two-phase production
