@@ -49,6 +49,9 @@ class Production:
 
 
 class TwoPhaseProduction(Production):
+    def __init__(self, p_res: NUMERIC):
+        super().__init__(p_res)
+
     def calculate_q_max(
         self,
         method: STRING,
