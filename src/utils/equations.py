@@ -18,7 +18,7 @@ def vogel_equation(p: dt.NUMERIC, p_res: dt.NUMERIC) -> dt.NUMERIC:
     # Vogel equation result
     result = 1 - (0.2 * pr) - (0.8 * pow(pr, 2))
 
-    return result if result > 0 else 0.0001
+    return result if result > 0 else 0.00000001
 
 
 def pressure_ratio_from_vogel_equation(q: dt.NUMERIC, q_max: dt.NUMERIC):
