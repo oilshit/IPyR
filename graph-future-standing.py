@@ -66,11 +66,12 @@ pressure_y_1 = [data["p"] for data in standing_future_graph]
 plt.plot(flowrate_x_1, pressure_y_1, linestyle="dashed", linewidth=.75)
 plt.scatter(flowrate_x_1, pressure_y_1, label="Standing (3 years later)")
 
-plt.scatter(future_data["q"], future_data["p"], label="Future")
+plt.scatter(future_data["q"], future_data["p"], label="Future production data")
 
 plt.xlim(0, q_max + 1000)
 plt.ylim(0, reservoir_pressure + 1000)
 
+plt.title("Future Production Performance of Oil Well\nUsing Standing Equation")
 plt.xlabel('Flow rate (stbd)')
 plt.ylabel('Pressure (psia)')
 
