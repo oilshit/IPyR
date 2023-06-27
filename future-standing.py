@@ -48,15 +48,15 @@ for data in production_data.data:
     q_max = round(production_data.calculate_q_max(reservoir_pressure, data), 2)
     j_future = round(production_data.calculate_future_pi(data), 2)
     future_q = round(production_data.calculate_future_q(data), 2)
-    # future_q_max = round(production_data.calculate_q_max({
-    #     "q": future_q,
-    #     "p": 
-    # }), 2)
+    future_q_max = round(production_data.calculate_q_max(production_data.future_p_res, {
+        "q": future_q,
+        "p": 680.5
+    }), 2)
 
+    print("Current Production Index (PI) (j_p): " + str(j_present))
     print("Reservoir pressure at present condition: " + str(reservoir_pressure))
     print("Pressure at present condition: " + str(production_data.data[0]["p"]))
     print("Flow rate at present condition: " + str(production_data.data[0]["q"]))
-    print("Current Production Index (PI) (j_p): " + str(j_present))
     print("Max flow rate using Standing equation (present) (stbd): " + str(q_max))
 
     separate_line()
@@ -64,6 +64,7 @@ for data in production_data.data:
     print("Future Production Index (PI) (j_f): " + str(j_future))
     print("Reservoir pressure at future condition: " + str(production_data.future_p_res))
     print("Flow rate at future condition: " + str(future_q))
+    print("Max flow rate using Standing equation (future) (stbd): " + str(future_q_max))
 
 #     plt.scatter(production_data.data[0]["q"], production_data.data[0]["p"], label="a")
 #     plt.scatter(q_max, 0, label="b")
