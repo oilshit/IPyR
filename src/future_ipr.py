@@ -213,6 +213,4 @@ class OilWell(Production):
                     "p": p,
                 })
 
-                print("q", )
-
             return production_list
