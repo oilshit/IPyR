@@ -50,7 +50,7 @@ for data in production_data.data:
     future_q = round(production_data.calculate_future_q(data), 2)
     future_q_max = round(production_data.calculate_q_max(production_data.future_p_res, {
         "q": future_q,
-        "p": 680.5
+        "p": production_data.data[-1]["p"]
     }), 2)
 
     print("Current Production Index (PI) (j_p): " + str(j_present))

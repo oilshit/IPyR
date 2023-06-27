@@ -7,7 +7,7 @@ def separate_line():
     print()
 
 # Let's test on creating our first performance
-reservoir_pressure = 1224.9
+reservoir_pressure = 1734
 production_data = OilWell(reservoir_pressure)
 
 production_data.water_cut = 0.3
@@ -18,7 +18,7 @@ production_data.future_p_res = reservoir_pressure * (1 - production_data.product
 
 # Add several data on the production instance
 production_cases = [
-    { "q": 1361, "p": 680.5 },
+    { "q": 768, "p": 1335 },
 ]
 
 for data in production_cases:
@@ -26,7 +26,7 @@ for data in production_cases:
 
 # Using Standing Equation for calculating
 ## max flow rate using single data
-standing_data = production_data.data[0]
+standing_data = production_data.data[-1]
 
 # Acquire several properties for production
 j_present = round(production_data.calculate_present_pi(standing_data), 2)
