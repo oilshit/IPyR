@@ -44,11 +44,11 @@ separate_line()
 for data in production_data.data:
     print("q: %d, p: %d" % (data["q"], data["p"]))
 
-    j_present = round(production_data.calculate_present_pi(data), 2)
-    q_max = round(production_data.calculate_q_max(reservoir_pressure, data), 2)
-    j_future = round(production_data.calculate_future_pi(data), 2)
-    future_q = round(production_data.calculate_future_q(data), 2)
-    future_q_max = round(production_data.calculate_q_max(production_data.future_p_res, {
+    j_present = round(production_data.calculate_present_pi("standing", data), 2)
+    q_max = round(production_data.calculate_q_max("standing", reservoir_pressure, data), 2)
+    j_future = round(production_data.calculate_future_pi("standing", data), 2)
+    future_q = round(production_data.calculate_future_q("standing", data), 2)
+    future_q_max = round(production_data.calculate_q_max("standing", production_data.future_p_res, {
         "q": future_q,
         "p": production_data.data[-1]["p"]
     }), 2)

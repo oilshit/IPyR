@@ -4,6 +4,9 @@ future_ipr.py
 Calculation of future production performance
 """
 
+import matplotlib.pyplot as plt
+import math
+
 from src.utils import dt
 from .utils import *
 
@@ -23,15 +26,36 @@ class Production:
             p_res (Reservoir pressure) : numeric
 
             data (Flow rate, pressure) : { "q": numeric, "p": numeric }[]
-                Default: []
+                DEFAULT: []
+
+            future_data (Flow rate, pressure) : { "q": numeric, "p": numeric }[]
+                DEFAULT: []
+
+            water_cut: numeric
+                DEFAULT: 0
+
+            future_water_cut: numeric
+                DEFAULT: 0
+
+            production_change: numeric
+                DEFAULT: 0
+
+            future_p_res (Future reservoir pressure): numeric
         """
 
-        self.data = []
         self.production_change = 0
         self.water_cut = 0
         self.future_water_cut = 0
+        
+        self.data = []
+        self.future_data = []
+
         self.p_res = p_res
         self.future_p_res = self.p_res * (1 - self.production_change)
+
+    def insert_data(self, data: dt.FLOWRATE_PRESSURE_DATA) -> None:
+        for i in data:
+            self.data.append(i)
 
     def __repr__(self):
         data = "".join(["    " + dt.STRING(x) + ",\n" for x in self.data])
@@ -58,23 +82,66 @@ class OilWell(Production):
     def __init__(self, p_res: dt.NUMERIC):
         super().__init__(p_res)
 
-    def calculate_q_max(self, p_res: dt.NUMERIC, data: dt.FLOWRATE_PRESSURE_SINGLE_DATA) -> dt.NUMERIC:
+    def insert_future_data(self, method: dt.STRING, data: dt.FLOWRATE_PRESSURE_DATA) -> None:
+        for i in data:
+            print(i)
+            if (method == "standing" or method == "eckmeir"):
+                self.future_data.append({ "q": self.calculate_future_q("eckmeir" if method == "eckmeir" else method, i), "p": i["p"] })
+
+    def calculate_q_max(
+            self,
+            method: dt.STRING,
+            p_res: dt.NUMERIC,
+            data: dt.FLOWRATE_PRESSURE_SINGLE_DATA) -> dt.NUMERIC:
         """
         Calculate max flow rate of oil production
 
         INPUT
+            method: str
             data: (Flow rate, pressure) : { "q": numeric, "p": numeric }
 
         OUTPUT
             q_max (Max flow rate): numeric
         """
 
-        # init flow rate ratio
-        qr = eq.vogel_equation(data["p"], p_res)
+        if (
+            method == "standing"
+            or method == "eckmeir_present"
+        ):
+            # applied all parameters in Standing equation
+            q_max = data["q"] / eq.vogel_equation(
+                data["p"], p_res
+            )
 
-        # calculate max flow rate
-        q_max = data["q"] / qr
-        return q_max
+            return q_max
+
+        elif (method == "fetkovich"):
+            # Resolving n using power regression method
+            production_x = [x["q"] for x in self.data]
+            production_y = [(self.p_res**2 - x["p"]**2) for x in self.data]
+
+            if (len(self.data) == 1):
+                production_x.append(1.00000001)
+                production_y.append(1.00000001)
+
+            (C, n) = numerical.power_regression(production_x, production_y)
+
+            print("n =", n, "c =", C)
+
+            # applied all parameters in Fetkovich Equation
+            q_max = self.calculate_future_pi(method, data) * math.pow(p_res**2 - data["p"]**2, n)
+            print(q_max)
+
+            return q_max
+        
+        elif (method == "eckmeir_future"):
+            # future flow max using Eckmeir equation
+            pr = math.pow(self.future_p_res / self.p_res, 3)
+            present_q_max = self.calculate_q_max("eckmeir_present", self.p_res, self.data[-1])
+
+            # print(present_q_max)
+
+            return pr * present_q_max
     
     def calculate_pwf(self, p_res, q: dt.NUMERIC, q_max: dt.NUMERIC) -> dt.NUMERIC:
         """
@@ -95,7 +162,7 @@ class OilWell(Production):
         return p_wf
         
 
-    def get_production_index(self, data: dt.FLOWRATE_PRESSURE_SINGLE_DATA) -> dt.NUMERIC:
+    def get_production_index(self, method: dt.STRING, data: dt.FLOWRATE_PRESSURE_SINGLE_DATA) -> dt.NUMERIC:
         """
         Get production index according to
         slope between pressure at reservoir and current condition
@@ -109,10 +176,10 @@ class OilWell(Production):
             j (Production Index (PI)): numeric
         """
 
-        j = 1.8 * self.calculate_q_max(self.p_res, data) / self.p_res
+        j = 1.8 * self.calculate_q_max(method, self.p_res, data) / self.p_res
         return j
     
-    def calculate_present_pi(self, data: dt.FLOWRATE_PRESSURE_SINGLE_DATA) -> dt.NUMERIC:
+    def calculate_present_pi(self, method: dt.STRING, data: dt.FLOWRATE_PRESSURE_SINGLE_DATA) -> dt.NUMERIC:
         """
         Get present productivity index
 
@@ -123,12 +190,31 @@ class OilWell(Production):
             j_p (Present Production Index (PI)): numeric
         """
 
-        j = self.get_production_index(data)
-        
-        j_r = 1 / 1.8 * (1 + 0.8 * (data["p"] / self.p_res))
-        j_p = j / j_r
+        if (method == "standing" or method == "eckmeir"):
+            j = self.get_production_index("standing", data)
+            
+            j_r = 1 / 1.8 * (1 + 0.8 * (data["p"] / self.p_res))
+            j_p = j / j_r
 
-        return j_p
+            return j_p
+    
+        elif (method == "fetkovich"):
+            production_x = [x["q"] for x in self.data]
+            production_y = [(self.p_res**2 - x["p"]**2) for x in self.data]
+
+            if (len(self.data) == 1):
+                production_x.append(0.1)
+                production_y.append(0.1)
+            
+            (C, n) = numerical.power_regression(production_x, production_y)
+
+            print("ini n =", n, C)
+
+            if (len(self.data) >= 1):
+            #     return C    
+            # else:
+                psr = math.pow(self.p_res**2 - data["p"]**2, n)
+                return data["q"] / psr
     
     def calculate_future_p_res(self, production_change: dt.NUMERIC) -> dt.NUMERIC:
         """
@@ -147,37 +233,65 @@ class OilWell(Production):
         p_res_f = self.p_res * (1 - production_change)
         return p_res_f
     
-    def calculate_future_pi(self, data: dt.FLOWRATE_PRESSURE_SINGLE_DATA) -> dt.NUMERIC:
+    def calculate_future_pi(self, method: dt.STRING, data: dt.FLOWRATE_PRESSURE_SINGLE_DATA) -> dt.NUMERIC:
         """
         Calculate future production index
 
         INPUT
+            method: string
             data: (Flow rate, pressure) : { "q": numeric, "p": numeric }
 
         OUTPUT
             j_f (Future Production Index (PI)): numeric
         """
 
-        # init squared pressure ratio
-        p_res_f = self.future_p_res
-        squared_pr = (p_res_f / self.p_res) ** 2
+        if (method == "standing" or method == "eckmeir"):
+            # init squared pressure ratio
+            p_res_f = self.future_p_res
+            squared_pr = (p_res_f / self.p_res) ** 2
+            
+            # calculate future production index
+            j_p = self.calculate_present_pi(method, data)
+            j_f = j_p * squared_pr
+
+            return j_f
         
-        # calculate future production index
-        j_p = self.calculate_present_pi(data)
-        j_f = j_p * squared_pr
+        elif (method == "fetkovich"):
+            future_p_res = self.calculate_future_p_res(self.production_change)
+            j_p = self.calculate_present_pi(method, data)
+            j_f = j_p * (future_p_res / self.p_res)
 
-        return j_f
+            return j_f
     
-    def calculate_future_q(self, data):
-        j_f = self.calculate_future_pi(data)  # future production index
-        p_res_f = self.future_p_res
-        vogel_calculation = eq.vogel_equation(data["p"], p_res_f)
+    def calculate_future_q(self, method: dt.STRING, data: dt.FLOWRATE_PRESSURE_SINGLE_DATA):
+        if (method == "standing" or method == "eckmeir"):
+            j_f = self.calculate_future_pi(method, data)  # future production index
+            p_res_f = self.future_p_res
+            vogel_calculation = eq.vogel_equation(data["p"], p_res_f)
 
-        q = (j_f * p_res_f / 1.8) * vogel_calculation
+            q = (j_f * p_res_f / 1.8) * vogel_calculation
 
-        return q
+            return q
+        
+        elif (method == "fetkovich"):
+            production_x = [x["q"] for x in self.data]
+            production_y = [(self.p_res**2 - x["p"]**2) for x in self.data]
+
+            if (len(self.data) == 1):
+                production_x.append(1.00000001)
+                production_y.append(1.00000001)
+
+            (C, n) = numerical.power_regression(production_x, production_y)
+
+            future_p_res = self.calculate_future_p_res(self.production_change)
+
+            psr = math.pow(future_p_res**2 - data["p"]**2, n)
+            j_f = self.calculate_future_pi(method, data)
+            q = j_f * psr
+
+            return q
     
-    def get_production_graph(self, q_max: dt.NUMERIC, n: dt.INT, p_res: dt.NUMERIC, data: dt.FLOWRATE_PRESSURE_SINGLE_DATA):
+    def get_production_graph(self, method: dt.STRING, q_max: dt.NUMERIC, n: dt.INT, p_res: dt.NUMERIC, data: dt.FLOWRATE_PRESSURE_SINGLE_DATA):
         """
         Create plot of production data interval
         based on q_max estimation and n intervals
@@ -208,9 +322,25 @@ class OilWell(Production):
 
             # Add pressure list
             for p in pressure_list:
-                production_list.append({
-                    "q": round(q_max * eq.vogel_equation(p, p_res), 2),
-                    "p": p,
-                })
+                if (method == "standing" or method == "eckmeir"):
+                    production_list.append({
+                        "q": round(q_max * eq.vogel_equation(p, p_res), 2),
+                        "p": p,
+                    })
+
+                elif (method == "fetkovich"):
+                    production_x = [x["q"] for x in self.data]
+                    production_y = [(p_res**2 - x["p"]**2) for x in self.data]
+
+                    if (len(self.data) == 1):
+                        production_x.append(1.00000001)
+                        production_y.append(1.00000001)
+
+                    (C, n) = numerical.power_regression(production_x, production_y)
+
+                    production_list.append({
+                        "p": p,
+                        "q": round(q_max * eq.fetkovich_equation(p, p_res, None, n), 2),
+                    })
 
             return production_list

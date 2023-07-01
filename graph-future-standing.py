@@ -29,22 +29,22 @@ for data in production_cases:
 standing_data = production_data.data[0]
 
 # Acquire several properties for production
-j_present = round(production_data.calculate_present_pi(standing_data), 2)
-q_max = round(production_data.calculate_q_max(reservoir_pressure, standing_data), 2)
+j_present = round(production_data.calculate_present_pi("standing", standing_data), 2)
+q_max = round(production_data.calculate_q_max("standing", reservoir_pressure, standing_data), 2)
 
-j_future = round(production_data.calculate_future_pi(standing_data), 2)
+j_future = round(production_data.calculate_future_pi("standing", standing_data), 2)
 future_p_res = production_data.future_p_res
 
-future_q = round(production_data.calculate_future_q(standing_data), 2)
+future_q = round(production_data.calculate_future_q("standing", standing_data), 2)
 future_data = {
     "q": future_q,
     "p": production_data.data[-1]["p"]
 }
-future_q_max = round(production_data.calculate_q_max(future_p_res, future_data), 2)
+future_q_max = round(production_data.calculate_q_max("standing", future_p_res, future_data), 2)
 
 iter = 12
 
-standing_graph = production_data.get_production_graph(q_max, iter, reservoir_pressure, standing_data)
+standing_graph = production_data.get_production_graph("standing", q_max, iter, reservoir_pressure, standing_data)
 
 flowrate_x = [data["q"] for data in standing_graph]
 pressure_y = [data["p"] for data in standing_graph]
@@ -58,7 +58,7 @@ plt.scatter(
     label="Production data"
 )
 
-standing_future_graph = production_data.get_production_graph(future_q_max, iter, future_p_res, future_data)
+standing_future_graph = production_data.get_production_graph("standing", future_q_max, iter, future_p_res, future_data)
 
 flowrate_x_1 = [data["q"] for data in standing_future_graph]
 pressure_y_1 = [data["p"] for data in standing_future_graph]
