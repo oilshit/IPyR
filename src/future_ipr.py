@@ -264,7 +264,7 @@ class OilWell(Production):
             return j_f
     
     def calculate_future_q(self, method: dt.STRING, data: dt.FLOWRATE_PRESSURE_SINGLE_DATA):
-        if (method == "standing" or method == "eckmeir"):
+        if (method == "standing"):
             j_f = self.calculate_future_pi(method, data)  # future production index
             p_res_f = self.future_p_res
             vogel_calculation = eq.vogel_equation(data["p"], p_res_f)
@@ -289,6 +289,15 @@ class OilWell(Production):
             j_f = self.calculate_future_pi(method, data)
             q = j_f * psr
 
+            return q
+        
+        elif (method == "eckmeir"):
+            print(self.future_p_res, self.p_res)
+            pr = math.pow(self.future_p_res / self.p_res, 3)
+            print(pr)
+
+            q = pr * data["q"]
+            print(q)
             return q
     
     def get_production_graph(self, method: dt.STRING, q_max: dt.NUMERIC, n: dt.INT, p_res: dt.NUMERIC, data: dt.FLOWRATE_PRESSURE_SINGLE_DATA):
